@@ -22,6 +22,8 @@ time, mark, audio, video {
 	font-size: 100%;
 	font: inherit;
 	vertical-align: baseline;
+	text-decoration: none;
+	color: inherit;
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure,
@@ -53,6 +55,20 @@ body {
 	font-family: 'Work Sans' ;
 	font-size: 14px;
 }
+
+#bandeau {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 59px;
+	gap: 11px;
+	background-color: black;
+}
+
+#bandeau p {
+	color: white;
+}
+
 header {
 	display: flex;
 	justify-content: space-between;
@@ -78,7 +94,7 @@ h1 > span {
 ;
 }
 
-h2{
+h2, #connexion h1{
 	font-family: 'Syne';
 	font-weight: 700;
 	font-size: 30px;
@@ -121,10 +137,29 @@ li:hover {
 #introduction p {
 	margin-bottom: 0.5em;
 }
+
 #portfolio h2 {
+	position: relative;
 	text-align: center;
-	margin-bottom: 1em;
+	margin-bottom: 38px;
 }
+
+#modifier-gallery {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	position: absolute;
+	top: 50%;
+	right: 50%;
+	transform: translate(200px, -50%);
+	border: none;
+	background-color: white;
+}
+
+#modifier-gallery {
+	color: black;
+}
+
 .gallery {
 	width: 100%;
 	display: grid;
@@ -145,23 +180,23 @@ margin: auto;
 	text-align: center;
 
 }
-#contact h2{
+#contact h2, #connexion h1{
 	margin-bottom: 20px;
 }
-#contact form {
+#contact form, #connexion form {
 	text-align: left;
 	margin-top:30px;
 	display: flex;
 	flex-direction: column;
 }
 
-#contact input {
+#contact input, #connexion input {
 	height: 50px;
 	font-size: 1.2em;
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
-#contact label {
+#contact label, #connexion label {
 	margin: 2em 0 1em 0;
 }
 #contact textarea {
@@ -169,7 +204,7 @@ margin: auto;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
 
-input[type="submit"]{
+input[type="submit"], #validation-modale {
 	font-family: 'Syne';
 	font-weight: 700;
 	color: white;
@@ -180,9 +215,148 @@ input[type="submit"]{
 	border-radius: 60px ;
 }
 
+.filtres {
+	font-family: 'Syne';
+	font-weight: 700;
+	color: #1D6154;
+	background-color: white;
+	height: 37px;
+	min-width: 100px;
+	text-align: center;
+	border-radius: 60px ;
+	border: 1px solid  #1D6154;
+	margin-bottom: 38px;
+}
+
+.filtres-actif {
+	color: white;
+	background-color: #1D6154;
+}
+
+#divisionFiltres {
+	display: flex;
+	justify-content: center;
+	gap: 10px;
+}
+
+#connexion {
+	margin-top: 10em;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#formulaire-connexion {
+	width: 379px;
+}
+
+main {
+	min-height: 1024px;
+}
+
+#mot-de-passe-oublie {
+	text-decoration: underline;
+}
+
 footer nav ul {
 	display: flex;
 	justify-content: flex-end;
 	margin: 2em
 }
+
+
+.not-visible {
+	display: none
+}
+
+#modale {
+	position: absolute;
+	top: 50px;
+	left: 50%;
+	background-color: white;
+	transform: translate(-50%,0);
+	z-index: 2;
+	width: 630px;
+	border-radius: 10px;
+	padding-top: 60px;
+	padding-left: 105px;
+	padding-right: 105px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+#background-opacity {
+	position: absolute;
+	height : 100%;
+	width: 100%;
+	max-width: 1140px;
+	background-color: rgba(0, 0, 0, 0.3);
+	z-index: 1;
+}
+
+#icon-fermeture {
+	position: absolute;
+	top: 0px;
+	right : 0px;
+	transform: translate(-32px,32px);
+}
+
+#modale h1 {
+	font-size: 26;
+	font-family: work sans;
+	color: black;
+	margin-bottom: 46px;
+}
+
+#contenu-modale {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+	gap: 10px;
+}
+
+.contenant-photo {
+	position: relative;
+	height: 102.57px;
+	width: 76.61px;
+	object-fit: contain;
+}
+
+/* TODO: trouver un moyen de faire tenir la photo dans ca division avec object fit  */
+.photo-projet {
+ height: 100px;
+}
+
+.contenant-poubelle {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	height: 17px;
+	width: 17px;
+	background-color: black;
+}
+
+#barre-separation {
+	height: 1px;
+	width: 100%;
+	background-color: grey;
+	margin-top: 38px;
+	margin-bottom: 38px
+}
+
+#validation-modale {
+	width: 237px;
+	margin-top: 0;
+	padding-top: 11px;
+	padding-bottom: 11px;
+	
+
+	filter: drop-shadow(0px 5px 3px rgba(0,0,0,0.5));
+}
+
+
+
 
