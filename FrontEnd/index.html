@@ -34,25 +34,26 @@
 <div id="pic-adding-modal" class="modal not-visible">
 	<i class="fa-solid fa-xmark closing-icon"></i>
 	<i class="fa-solid fa-arrow-left" id="arrow-left"></i>
-	<h1 >Ajout photo</h1>
+	<h1>Ajout photo</h1>
 	<!-- limiter la taille grâce la propriété .size -->
-	<form action="#" method="post" enctype="multipart/form-data">
+	<form action="#" method="post" enctype="multipart/form-data" id="pic-adding-form">
 		<div id="pic-dropping">
-			
-			<label for="file">
-				<i class="fa-regular fa-image"></i>
-				<button id="add-picture">
+			<input type="file" accept=".jpg,.png" id="file" name="file">
+			<label for="file" id="pic-dropping-label">
+				<i class="fa-regular fa-image" id="image-label"></i>
+				<div id="add-picture-div">
 					+ Ajouter photo
-				</button>
+				</div>
 				<p>jpg, png : 4mo max</p>
+				<img id="preview-image" src="#" alt="Prévisualisation de l'image" class="not-visible">
 			</label>
-			<input type="file" accept=".jpg,.png" id="picture" name="file" style="display:none;">
 		</div>
 		<label for="title">Titre</label>
 		<input type="text" name="title" id="title">
 		<label for="category">Catégorie</label>
 		<select id="category" name="category">
 			<!-- A rendre dynanimque -->
+			<option value="" selected></option>
 			<option value="1">Objets</option>
 			<option value="2">Appartements</option>
 			<option value="3">Hotel & restaurant</option>
@@ -62,7 +63,7 @@
 	</form>
 </div>
 <div class="not-visible" id="headband">
-	<img src="assets/icons/crayon.svg" id="image-crayon"> 
+	<i class="fa-regular fa-pen-to-square" id="image-crayon"></i> 
 	<p>Mode édition</p>
 </div>
 <header>
@@ -148,9 +149,9 @@
 		<p>Vous avez un projet ? Discutons-en !</p>
 		<form action="#" method="post">
 			<label for="name">Nom</label>
-			<input type="text" name="name" id="name">
+			<input type="text" name="name" id="name" autocomplete="name">
 			<label for="email">Email</label>
-			<input type="email" name="email" id="email">
+			<input type="email" name="email" id="email" autocomplete="email">
 			<label for="message">Message</label>
 			<textarea name="message" id="message" cols="30" rows="10"></textarea>
 			<input type="submit" value="Envoyer">

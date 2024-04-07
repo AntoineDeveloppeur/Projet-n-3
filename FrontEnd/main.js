@@ -1,19 +1,19 @@
 
 /***** Page index ******/
 if (document.getElementById("portfolio")) {
-    const filtres = await recupererFiltres()
-    insertionDesFiltres(filtres)
-    const travaux = await recupererTravaux()
-    remplirLaGallerieEnDynamique(travaux)
+    const filtres = await getFilters()
+    putFiltersIntoHTML(filtres)
+    const travaux = await getWorks()
+    FillGallery(travaux)
     if(window.localStorage.getItem("token")!== null) {
         console.log("mode admin")
-        chargerModeAdmin()
+        LoadAdminMode()
     } else {
         console.log("mode user")
     }
 }
 
-async function chargerModeAdmin() {
+async function LoadAdminMode() {
     const headband = document.getElementById("headband")
     headband.classList.remove("not-visible")
 
@@ -25,11 +25,9 @@ async function chargerModeAdmin() {
     const modifierGalerie = document.getElementById("modify-galery")
     modifierGalerie.classList.remove("not-visible")
     modifierGalerie.addEventListener("click", async () => {
-        await remplirLaModaleEnDynamique(await recupererTravaux())
-        montrermodalGalery()
+        await FillGalleryModal(await getWorks())
+        showGaleryModal()
     })
-    // Chargement dynamique de la modale pour améliorer l'expérience Utilisateur
-    
 }
 
 function logOut() {
@@ -43,14 +41,14 @@ function logOut() {
 
 
 /****** Récupérer les travaux *****/
-async function recupererTravaux () {
+async function getWorks () {
     const reponse = await fetch("http://localhost:5678/api/works")
     const travaux = await reponse.json()
     return travaux
 }
 
 /****** Récupérer les filtres *****/
-async function recupererFiltres () {
+async function getFilters () {
     if (window.localStorage.getItem("filtresLocalStorage") === null) {
         const reponse = await fetch("http://localhost:5678/api/categories")
         const filtres = await reponse.json()
@@ -66,7 +64,7 @@ async function recupererFiltres () {
     }
 }
 
-async function insertionDesFiltres(filtres) {
+async function putFiltersIntoHTML(filtres) {
 
     // Création est insertion dans l'HTML de la divisionFiltres
     let divisionFiltres = document.createElement("div")
@@ -93,21 +91,22 @@ async function insertionDesFiltres(filtres) {
     // Rendre cliquable les filtres
     let filterButtons=document.querySelectorAll(".filtres")
     filterButtons.forEach(boutton => {
-        boutton.addEventListener("click", () => {
-            filtrerTravaux(event)
+        boutton.addEventListener("click", (event) => {
+            filterWorks(event)
     })})
 }
 
 // TODO : rendre le background des filtres verts quand on clique dessus
-async function filtrerTravaux(event) {
-    const travaux = await recupererTravaux()
+async function filterWorks(event) {
+    const travaux = await getWorks()
     const filterButtons = document.querySelectorAll(".filtres")
     console.log(filterButtons)
     filterButtons.forEach(boutton => {
-        boutton.classList.remove("filtre-actif")
+        boutton.classList.remove("filtres-actif")
     })
-    if (event.target.id=="") {
-        remplirLaGallerieEnDynamique(travaux)
+    if (event.target.id=="tous-filter") {
+        console.log("event target vide")
+        FillGallery(travaux)
         const tousFilter = document.getElementById("tous-filter")
         tousFilter.classList.add("filtres-actif")
     } else {
@@ -115,8 +114,8 @@ async function filtrerTravaux(event) {
         console.log("else pour le boutton pour les bouttons ")
         event.target.classList.add("filtres-actif")
 
-        let travauxFiltres = travaux.filter(projets => projets.categoryId == event.target.id)
-        remplirLaGallerieEnDynamique(travauxFiltres) 
+        let worksFilters = travaux.filter(works => works.categoryId == event.target.id)
+        FillGallery(worksFilters) 
     }
 }
 
@@ -126,7 +125,7 @@ async function filtrerTravaux(event) {
  * 
  * *****/
 
-async function remplirLaGallerieEnDynamique(travaux) {
+async function FillGallery(travaux) {
     /****** Vider la gallerie ******/
     let galery= document.querySelector(".galery")
     galery.innerHTML=""
@@ -148,35 +147,35 @@ async function remplirLaGallerieEnDynamique(travaux) {
 
 
 
-async function remplirLaModaleEnDynamique(travaux) {
+async function FillGalleryModal(travaux) {
     /****** Vider la modale ******/
-    let contenuModale = document.getElementById("modal-content")
-    contenuModale.innerHTML=""
+    let modalContent = document.getElementById("modal-content")
+    modalContent.innerHTML=""
 
     for (let i = 0; i < travaux.length; i++) {
-        let contenantPhoto = document.createElement("div")
-        contenantPhoto.classList.add("picture-container")
-        contenuModale.appendChild(contenantPhoto)
+        let picDiv = document.createElement("div")
+        picDiv.classList.add("picture-container")
+        modalContent.appendChild(picDiv)
 
-        let photoProjet = document.createElement("img")
-        photoProjet.classList.add("project-picture")
-        photoProjet.src=travaux[i].imageUrl
-        photoProjet.alt=travaux[i].title
-        contenantPhoto.appendChild(photoProjet)
+        let projectPicture = document.createElement("img")
+        projectPicture.classList.add("project-picture")
+        projectPicture.src=travaux[i].imageUrl
+        projectPicture.alt=travaux[i].title
+        picDiv.appendChild(projectPicture)
 
-        let contenantPoubelle = document.createElement("div")
-        contenantPoubelle.classList.add("trash-container")
-        contenantPoubelle.id = travaux[i].id
-        contenantPhoto.appendChild(contenantPoubelle)
+        let trashDiv = document.createElement("div")
+        trashDiv.classList.add("trash-container")
+        trashDiv.id = travaux[i].id
+        picDiv.appendChild(trashDiv)
 
-        let iconePoubelle = document.createElement("img")
-        iconePoubelle.classList.add="trash-icon"
-        iconePoubelle.src = "assets/icons/poubelle.svg"
-        iconePoubelle.id = travaux[i].id
-        contenantPoubelle.appendChild(iconePoubelle)
+        let trashIcon = document.createElement("img")
+        trashIcon.classList.add="trash-icon"
+        trashIcon.src = "assets/icons/poubelle.svg"
+        trashIcon.id = travaux[i].id
+        trashDiv.appendChild(trashIcon)
     }
-    await supprimerUnProjet()
-    activerBouttonsModales ()
+    await deleteProject()
+    ActivateModalButtons ()
 }
 
 // TODO : Enregistrer la base de donnée quelque part avant de la modifier
@@ -184,77 +183,74 @@ async function remplirLaModaleEnDynamique(travaux) {
 // Le reste de la fonction fonctionne
 
 
-function activerBouttonsModales () {
+function ActivateModalButtons () {
     // rendre cliquable ajout photo, la croix et rendre visible et non visible les éléments correspondants
     let backgroundOpacity = document.getElementById("background-opacity")
     backgroundOpacity.addEventListener("click", (event) => {
         backgroundOpacity.classList.add("not-visible")
-        cacherModaleAjoutPhoto()
-        cachermodalGalery()
+        hidePicAddingModal()
+        hindGaleryModal()
     })
     
-    let iconFermeture = document.querySelectorAll(".closing-icon")
-    iconFermeture.forEach(boutton => {
+    let closingIcon = document.querySelectorAll(".closing-icon")
+    closingIcon.forEach(boutton => {
         boutton.addEventListener("click", () => {
-            cacherModaleAjoutPhoto()
-            cachermodalGalery() 
+            hidePicAddingModal()
+            hindGaleryModal() 
         })
     })
 
     const arrowLeft = document.getElementById("arrow-left")
     arrowLeft.addEventListener("click", () => {
-        cacherModaleAjoutPhoto()
-        montrermodalGalery()
+        hidePicAddingModal()
+        showGaleryModal()
     })
 
-    let ajouterPhoto = document.getElementById("pic-adding")
-    ajouterPhoto.addEventListener("click", () => {
-        cachermodalGalery()
-        montrerModaleAjoutPhoto()
+    let addPic = document.getElementById("pic-adding")
+    addPic.addEventListener("click", () => {
+        hindGaleryModal()
+        showPicAddingModal()
+        picPreview()
         
     })
 }
 
-function cachermodalGalery() {
+function hindGaleryModal() {
     const modalGalery = document.getElementById("modal-galery")
     modalGalery.classList.add("not-visible")
     const backgroundOpacity = document.getElementById("background-opacity")
     backgroundOpacity.classList.add("not-visible")
 }
 
-function cacherModaleAjoutPhoto() {
-    let modaleAjoutPhoto = document.getElementById("pic-adding-modal")
-        modaleAjoutPhoto.classList.add("not-visible")
+function hidePicAddingModal() {
+    let PicAddingModal = document.getElementById("pic-adding-modal")
+        PicAddingModal.classList.add("not-visible")
         const backgroundOpacity = document.getElementById("background-opacity")
         backgroundOpacity.classList.add("not-visible")
 }
 
-function montrermodalGalery() {
+function showGaleryModal() {
     const modalGalery = document.getElementById("modal-galery")
     modalGalery.classList.remove("not-visible")
     const backgroundOpacity = document.getElementById("background-opacity")
     backgroundOpacity.classList.remove("not-visible")
 }
 
-function montrerModaleAjoutPhoto() {
-    const modaleAjoutPhoto = document.getElementById("pic-adding-modal")
-    modaleAjoutPhoto.classList.remove("not-visible")
+function showPicAddingModal() {
+    const PicAddingModal = document.getElementById("pic-adding-modal")
+    PicAddingModal.classList.remove("not-visible")
     const backgroundOpacity = document.getElementById("background-opacity")
     backgroundOpacity.classList.remove("not-visible")
 }
-
-
 
 /***** 
  * 
  * Page de connexion
  * 
  * *****/
-
-
 function sendConnexionForm () {
     const email = document.getElementById("email").value
-    const motDePasse = document.getElementById("mot-de-passe").value
+    const motDePasse = document.getElementById("password").value
     const data = {
         "email": email,
         "password": motDePasse
@@ -283,13 +279,15 @@ function sendConnexionForm () {
 }
 
 if (document.getElementById("connexion")) {
-    const connexion = document.getElementById("envoi-formulaire-connexion")
+    const connexion = document.getElementById("send-connection-form")
     connexion.addEventListener("click", (event) => {
         event.preventDefault()
         sendConnexionForm()
     })
 }
 
+
+// Modale ajout de travaux 
 if (document.getElementById("pic-adding-validation")) {
     const picAddingValidation = document.getElementById("pic-adding-validation")
     picAddingValidation.addEventListener("click", (event) => {
@@ -297,7 +295,6 @@ if (document.getElementById("pic-adding-validation")) {
         addwork()
     })
 }
-
 
 async function addwork () {
     const title = document.getElementById("title").value
@@ -320,8 +317,8 @@ async function addwork () {
     try {
         if(response.ok) {
         alert("nouveauTravailEnregistre")
-        await remplirLaModaleEnDynamique(await recupererTravaux())
-        await remplirLaGallerieEnDynamique(await recupererTravaux())
+        await FillGalleryModal(await getWorks())
+        await FillGallery(await getWorks())
     } else {
         console.log(response)
     }
@@ -331,9 +328,29 @@ async function addwork () {
     }
 }
 
-function supprimerUnProjet () {
-    let contenantPoubelle = document.querySelectorAll(".trash-container")
-    contenantPoubelle.forEach(boutton => {
+function picPreview () {
+    document.getElementById("file").addEventListener("change", function() {
+        const file = this.files[0]
+        if (file) {
+        const reader = new FileReader()
+        reader.onload = function(e) {
+            const preview = document.createElement("img")
+            preview.src = e.target.result
+            preview.alt = "prévisionnage de l'image choisi par l'utilisateur"
+            preview.style.height = "180px"
+            const label = document.getElementById("pic-dropping-label")
+            label.innerHTML = ""
+            label.appendChild(preview)
+        }
+        reader.readAsDataURL(file);
+        }
+    })
+}
+
+// Modale supprimer les projet
+function deleteProject () {
+    let trashDiv = document.querySelectorAll(".trash-container")
+    trashDiv.forEach(boutton => {
     boutton.addEventListener("click", async (event) => {
         console.log(event.target.id)
         const localHostAdress = "http://localhost:5678/api/works/"+event.target.id
@@ -353,10 +370,10 @@ function supprimerUnProjet () {
                 throw new Error('Erreur lors de la requête DELETE.')
             } else {
                 console.log(response)
-                const travauxMAJ = await recupererTravaux()
+                const travauxMAJ = await getWorks()
                 console.log(travauxMAJ)
-                await remplirLaModaleEnDynamique(await recupererTravaux())
-                await remplirLaGallerieEnDynamique(await recupererTravaux())
+                await FillGalleryModal(await getWorks())
+                await FillGallery(await getWorks())
             }
         } catch(error) {
                 console.error(error);
