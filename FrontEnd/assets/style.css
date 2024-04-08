@@ -434,3 +434,17 @@ footer nav ul {
 	filter: drop-shadow(0px 5px 3px rgba(0,0,0,0.5));
 }
 
+#pic-adding-validation {
+	width: 237px;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 43px;
+	padding-top: 11px;
+	padding-bottom: 11px;
+	color: white;
+	border-radius: 60px;
+	background-color: #A7A7A7;
+	font-family: 'Syne';
+	filter: drop-shadow(0px 5px 3px rgba(0,0,0,0.5));
+}
+

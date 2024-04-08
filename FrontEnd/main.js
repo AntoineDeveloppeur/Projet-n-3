@@ -1,8 +1,8 @@
 
 /***** Page index ******/
 if (document.getElementById("portfolio")) {
-    const filtres = await getFilters()
-    putFiltersIntoHTML(filtres)
+    const categories = await getCategories()
+    putFiltersIntoHTML(categories)
     const travaux = await getWorks()
     FillGallery(travaux)
     if(window.localStorage.getItem("token")!== null) {
@@ -47,24 +47,16 @@ async function getWorks () {
     return travaux
 }
 
-/****** Récupérer les filtres *****/
-async function getFilters () {
-    if (window.localStorage.getItem("filtresLocalStorage") === null) {
+/****** Récupérer les categories *****/
+async function getCategories () {
         const reponse = await fetch("http://localhost:5678/api/categories")
-        const filtres = await reponse.json()
+        const categories = await reponse.json()
         // Stockage des informations dans le localStorage
-        const filtresLocalStorage = JSON.stringify(filtres);
-        window.localStorage.setItem("filtresLocalStorage", filtresLocalStorage);
-        console.log(filtres)
-        return filtres
-    } else {
-        const reponse = window.localStorage.getItem("filtresLocalStorage")
-        const filtres = JSON.parse(reponse)
-        return filtres
-    }
+        return categories
+    
 }
 
-async function putFiltersIntoHTML(filtres) {
+async function putFiltersIntoHTML(categories) {
 
     // Création est insertion dans l'HTML de la divisionFiltres
     let divisionFiltres = document.createElement("div")
@@ -81,10 +73,10 @@ async function putFiltersIntoHTML(filtres) {
     divisionFiltres.appendChild(tous)
 
     // Création des autres filtres
-    for (let i = 0; i < filtres.length; i++) {
+    for (let i = 0; i < categories.length; i++) {
         let boutton = document.createElement("button")
-        boutton.innerText = filtres[i].name
-        boutton.id = `${filtres[i].id}`
+        boutton.innerText = categories[i].name
+        boutton.id = `${categories[i].id}`
         boutton.classList.add("filtres")
         divisionFiltres.appendChild(boutton)
     }
@@ -211,8 +203,25 @@ function ActivateModalButtons () {
         hindGaleryModal()
         showPicAddingModal()
         picPreview()
-        
+        highlightAddWorkButton()
+        putCategoriesIntoHtml()
     })
+}
+
+async function putCategoriesIntoHtml() {
+    const categories = await getCategories()
+    console.log(categories)
+    const selectCategory = document.getElementById("category")
+    selectCategory.innerHTML = ""
+    const valueEmpty = document.createElement("option")
+    valueEmpty.setAttribute("selected", "selected")
+    selectCategory.appendChild(valueEmpty)
+    for (let i = 0; i < categories.length; i++) {
+        const value = document.createElement("option")
+        value.value = categories[i].id
+        value.innerText = categories[i].name
+        selectCategory.appendChild(value)
+    }
 }
 
 function hindGaleryModal() {
@@ -243,49 +252,35 @@ function showPicAddingModal() {
     backgroundOpacity.classList.remove("not-visible")
 }
 
-/***** 
- * 
- * Page de connexion
- * 
- * *****/
-function sendConnexionForm () {
-    const email = document.getElementById("email").value
-    const motDePasse = document.getElementById("password").value
-    const data = {
-        "email": email,
-        "password": motDePasse
+function highlightAddWorkButton() {
+    const file = document.getElementById("file")
+    const title = document.getElementById("title")
+    const category = document.getElementById("category")
+    file.addEventListener("change", () => {
+        checkHighlightConditions()
+        console.log(file.value)
+    })
+    title.addEventListener("change", () => {
+        checkHighlightConditions()
+        console.log(title.value)
+    }) 
+    category.addEventListener("change", () => {
+        checkHighlightConditions()
+        console.log(category.value)
+    })
+}
+
+function checkHighlightConditions() {
+    const file = document.getElementById("file")
+    const title = document.getElementById("title")
+    const category = document.getElementById("category")
+    const picAddingValidation = document.getElementById("pic-adding-validation")
+    if (file.value !== "" & title.value !== "" & category.value !== "") {
+        picAddingValidation.style.backgroundColor = "#1D6154"
+    } else {
+        picAddingValidation.style.backgroundColor = "#A7A7A7"
     }
-    // TODO: Récupérer l'erreur et l'intégré à l'HTML pour améliorer l'expérience utilisateur
-    fetch("http://localhost:5678/api/users/login", {
-        method: "POST",
-        headers: {
-        "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-    })
-    // .then((response) => response.json())
-    .then((response) => response.json())
-    .then((response) => {
-        window.localStorage.setItem("token",response.token)
-        if (response.error) {
-            alert("Email ou mot de passe incorrect")
-        } else {
-            window.location.href = "index.html"
-        }
-    })
-    .catch((error) => {
-    console.log(error);
-    });
 }
-
-if (document.getElementById("connexion")) {
-    const connexion = document.getElementById("send-connection-form")
-    connexion.addEventListener("click", (event) => {
-        event.preventDefault()
-        sendConnexionForm()
-    })
-}
-
 
 // Modale ajout de travaux 
 if (document.getElementById("pic-adding-validation")) {
@@ -299,7 +294,7 @@ if (document.getElementById("pic-adding-validation")) {
 async function addwork () {
     const title = document.getElementById("title").value
     const category = document.getElementById("category").value
-    const picture = document.getElementById("picture").files[0]
+    const picture = document.getElementById("file").files[0]
     console.log(title, category, picture)
     const formdata = new FormData()
     formdata.append("image", picture)
@@ -382,3 +377,48 @@ function deleteProject () {
     })
     })
 }
+
+
+/***** 
+ * 
+ * Page de connexion
+ * 
+ * *****/
+function sendConnexionForm () {
+    const email = document.getElementById("email").value
+    const motDePasse = document.getElementById("password").value
+    const data = {
+        "email": email,
+        "password": motDePasse
+    }
+    // TODO: Récupérer l'erreur et l'intégré à l'HTML pour améliorer l'expérience utilisateur
+    fetch("http://localhost:5678/api/users/login", {
+        method: "POST",
+        headers: {
+        "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+    // .then((response) => response.json())
+    .then((response) => response.json())
+    .then((response) => {
+        window.localStorage.setItem("token",response.token)
+        if (response.error) {
+            alert("Email ou mot de passe incorrect")
+        } else {
+            window.location.href = "index.html"
+        }
+    })
+    .catch((error) => {
+    console.log(error);
+    });
+}
+
+if (document.getElementById("connexion")) {
+    const connexion = document.getElementById("send-connection-form")
+    connexion.addEventListener("click", (event) => {
+        event.preventDefault()
+        sendConnexionForm()
+    })
+}
+
