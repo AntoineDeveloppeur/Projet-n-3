@@ -1,12 +1,13 @@
 
-/***** Page index ******/
+/*
+ * Page index 
+ */
 if (document.getElementById("portfolio")) {
     const categories = await getCategories()
     putFiltersIntoHTML(categories)
     const travaux = await getWorks()
     FillGallery(travaux)
     if(window.localStorage.getItem("token")!== null) {
-        console.log("mode admin")
         LoadAdminMode()
     } else {
         console.log("mode user")
@@ -22,12 +23,14 @@ async function LoadAdminMode() {
     login.href= "index.html"
     logOut()
 
-    const modifierGalerie = document.getElementById("modify-galery")
+    const modifierGalerie = document.getElementById("modify-gallery")
     modifierGalerie.classList.remove("not-visible")
     modifierGalerie.addEventListener("click", async () => {
         await FillGalleryModal(await getWorks())
+        await deleteProject()
         showGaleryModal()
     })
+    ActivateModalsButtons ()
 }
 
 function logOut() {
@@ -35,90 +38,60 @@ function logOut() {
     login.addEventListener("click", () => {
         window.localStorage.removeItem("token")
         login.innerText= "login"
-        // login.href= "connexion.html"
     })
 }
 
-
-/****** Récupérer les travaux *****/
-async function getWorks () {
-    const reponse = await fetch("http://localhost:5678/api/works")
-    const travaux = await reponse.json()
-    return travaux
-}
-
-/****** Récupérer les categories *****/
-async function getCategories () {
-        const reponse = await fetch("http://localhost:5678/api/categories")
-        const categories = await reponse.json()
-        // Stockage des informations dans le localStorage
-        return categories
-    
-}
-
 async function putFiltersIntoHTML(categories) {
-
-    // Création est insertion dans l'HTML de la divisionFiltres
-    let divisionFiltres = document.createElement("div")
-    divisionFiltres.id = "divisionFiltres"
+    let divFilters = document.createElement("div")
+    divFilters.id = "divFilters"
     const portfolio = document.querySelector("#portfolio")
     const galery= document.querySelector(".galery")
-    portfolio.insertBefore(divisionFiltres, galery)
+    portfolio.insertBefore(divFilters, galery)
 
-    //  Création du filtre tous
     const tous = document.createElement("button")
     tous.id = "tous-filter"
     tous.innerText = "Tous"
-    tous.classList.add("filtres","filtres-actif")
-    divisionFiltres.appendChild(tous)
+    tous.classList.add("filters","filters-active")
+    divFilters.appendChild(tous)
 
-    // Création des autres filtres
     for (let i = 0; i < categories.length; i++) {
         let boutton = document.createElement("button")
         boutton.innerText = categories[i].name
         boutton.id = `${categories[i].id}`
-        boutton.classList.add("filtres")
-        divisionFiltres.appendChild(boutton)
+        boutton.classList.add("filters")
+        divFilters.appendChild(boutton)
     }
-    // Rendre cliquable les filtres
-    let filterButtons=document.querySelectorAll(".filtres")
+
+    let filterButtons=document.querySelectorAll(".filters")
     filterButtons.forEach(boutton => {
         boutton.addEventListener("click", (event) => {
             filterWorks(event)
     })})
 }
 
-// TODO : rendre le background des filtres verts quand on clique dessus
 async function filterWorks(event) {
     const travaux = await getWorks()
-    const filterButtons = document.querySelectorAll(".filtres")
+    const filterButtons = document.querySelectorAll(".filters")
     console.log(filterButtons)
     filterButtons.forEach(boutton => {
-        boutton.classList.remove("filtres-actif")
+        boutton.classList.remove("filters-active")
     })
     if (event.target.id=="tous-filter") {
         console.log("event target vide")
         FillGallery(travaux)
         const tousFilter = document.getElementById("tous-filter")
-        tousFilter.classList.add("filtres-actif")
+        tousFilter.classList.add("filters-active")
     } else {
         console.log(event.target.id)
         console.log("else pour le boutton pour les bouttons ")
-        event.target.classList.add("filtres-actif")
+        event.target.classList.add("filters-active")
 
         let worksFilters = travaux.filter(works => works.categoryId == event.target.id)
         FillGallery(worksFilters) 
     }
 }
 
-/***** 
- * 
- * Partie Modale Galerie 
- * 
- * *****/
-
-async function FillGallery(travaux) {
-    /****** Vider la gallerie ******/
+function FillGallery(travaux) {
     let galery= document.querySelector(".galery")
     galery.innerHTML=""
 
@@ -137,9 +110,10 @@ async function FillGallery(travaux) {
     }
 }
 
-
-
-async function FillGalleryModal(travaux) {
+/*
+ * Partie Modale Galerie 
+ */
+function FillGalleryModal(travaux) {
     /****** Vider la modale ******/
     let modalContent = document.getElementById("modal-content")
     modalContent.innerHTML=""
@@ -166,29 +140,23 @@ async function FillGalleryModal(travaux) {
         trashIcon.id = travaux[i].id
         trashDiv.appendChild(trashIcon)
     }
-    await deleteProject()
-    ActivateModalButtons ()
+
 }
 
-// TODO : Enregistrer la base de donnée quelque part avant de la modifier
-// A l'heure actuel l'identifiant utilisé est 20 pour ne pas supprmier de projet
-// Le reste de la fonction fonctionne
-
-
-function ActivateModalButtons () {
+function ActivateModalsButtons () {
     // rendre cliquable ajout photo, la croix et rendre visible et non visible les éléments correspondants
     let backgroundOpacity = document.getElementById("background-opacity")
     backgroundOpacity.addEventListener("click", (event) => {
         backgroundOpacity.classList.add("not-visible")
         hidePicAddingModal()
-        hindGaleryModal()
+        hideGaleryModal()
     })
     
     let closingIcon = document.querySelectorAll(".closing-icon")
     closingIcon.forEach(boutton => {
         boutton.addEventListener("click", () => {
             hidePicAddingModal()
-            hindGaleryModal() 
+            hideGaleryModal() 
         })
     })
 
@@ -200,7 +168,9 @@ function ActivateModalButtons () {
 
     let addPic = document.getElementById("pic-adding")
     addPic.addEventListener("click", () => {
-        hindGaleryModal()
+        hideGaleryModal()
+        // vider les champs de saisies
+        emptyPicAddingModalInputs()
         showPicAddingModal()
         picPreview()
         highlightAddWorkButton()
@@ -208,9 +178,24 @@ function ActivateModalButtons () {
     })
 }
 
+/*
+ * Partie Modale Ajout de projet 
+ */
+if (document.getElementById("pic-adding-validation")) {
+    const picAddingValidation = document.getElementById("pic-adding-validation")
+    picAddingValidation.addEventListener("click", (event) => {
+        event.preventDefault()
+        if(checkHighlightConditions()) {
+            addwork()
+        } else {
+            alert("Veuillez remplir l'ensemble des champs et ajouter une photo")
+        }
+        
+    })
+}
+
 async function putCategoriesIntoHtml() {
     const categories = await getCategories()
-    console.log(categories)
     const selectCategory = document.getElementById("category")
     selectCategory.innerHTML = ""
     const valueEmpty = document.createElement("option")
@@ -224,71 +209,23 @@ async function putCategoriesIntoHtml() {
     }
 }
 
-function hindGaleryModal() {
-    const modalGalery = document.getElementById("modal-galery")
-    modalGalery.classList.add("not-visible")
-    const backgroundOpacity = document.getElementById("background-opacity")
-    backgroundOpacity.classList.add("not-visible")
-}
-
-function hidePicAddingModal() {
-    let PicAddingModal = document.getElementById("pic-adding-modal")
-        PicAddingModal.classList.add("not-visible")
-        const backgroundOpacity = document.getElementById("background-opacity")
-        backgroundOpacity.classList.add("not-visible")
-}
-
-function showGaleryModal() {
-    const modalGalery = document.getElementById("modal-galery")
-    modalGalery.classList.remove("not-visible")
-    const backgroundOpacity = document.getElementById("background-opacity")
-    backgroundOpacity.classList.remove("not-visible")
-}
-
-function showPicAddingModal() {
-    const PicAddingModal = document.getElementById("pic-adding-modal")
-    PicAddingModal.classList.remove("not-visible")
-    const backgroundOpacity = document.getElementById("background-opacity")
-    backgroundOpacity.classList.remove("not-visible")
-}
-
-function highlightAddWorkButton() {
-    const file = document.getElementById("file")
-    const title = document.getElementById("title")
-    const category = document.getElementById("category")
-    file.addEventListener("change", () => {
-        checkHighlightConditions()
-        console.log(file.value)
-    })
-    title.addEventListener("change", () => {
-        checkHighlightConditions()
-        console.log(title.value)
-    }) 
-    category.addEventListener("change", () => {
-        checkHighlightConditions()
-        console.log(category.value)
-    })
-}
-
-function checkHighlightConditions() {
-    const file = document.getElementById("file")
-    const title = document.getElementById("title")
-    const category = document.getElementById("category")
-    const picAddingValidation = document.getElementById("pic-adding-validation")
-    if (file.value !== "" & title.value !== "" & category.value !== "") {
-        picAddingValidation.style.backgroundColor = "#1D6154"
-    } else {
-        picAddingValidation.style.backgroundColor = "#A7A7A7"
-    }
-}
-
-// Modale ajout de travaux 
-if (document.getElementById("pic-adding-validation")) {
-    const picAddingValidation = document.getElementById("pic-adding-validation")
-    picAddingValidation.addEventListener("click", (event) => {
-        event.preventDefault()
-        addwork()
-    })
+function emptyPicAddingModalInputs() {
+    document.getElementById("title").value = ""
+    document.getElementById("category").value = ""
+    const preview = document.getElementById("uploaded-pic")
+    preview.classList.add("not-visible")
+    const labelToHide = document.getElementById("label-to-hide")
+    labelToHide.classList.remove("not-visible")
+    // const oldFileInput = document.getElementById("file");
+    // // Créer un nouvel élément input de type file
+    // const newFileInput = document.createElement("input");
+    // newFileInput.type = "file";
+    // newFileInput.id = "file";
+    // newFileInput.name = "file";
+    // newFileInput.accept = ".jpg,.png"
+    
+    // // Remplacer l'ancien input par le nouvel input
+    // oldFileInput.parentNode.replaceChild(newFileInput, oldFileInput);
 }
 
 async function addwork () {
@@ -322,28 +259,54 @@ async function addwork () {
         console.log(error)
     }
 }
-
+// TODO : arrêter pic préview après avoir cliquer sur le label sans rien sélectionner
 function picPreview () {
     document.getElementById("file").addEventListener("change", function() {
         const file = this.files[0]
         if (file) {
-        const reader = new FileReader()
-        reader.onload = function(e) {
-            const preview = document.createElement("img")
-            preview.src = e.target.result
-            preview.alt = "prévisionnage de l'image choisi par l'utilisateur"
-            preview.style.height = "180px"
-            const label = document.getElementById("pic-dropping-label")
-            label.innerHTML = ""
-            label.appendChild(preview)
-        }
+            // methode js
+            const reader = new FileReader()
+            reader.onload = function(e) {
+                const preview = document.getElementById("uploaded-pic")
+                preview.src = e.target.result
+                preview.style.height = "180px"
+                preview.classList.remove("not-visible")
+                const labelToHide = document.getElementById("label-to-hide")
+                labelToHide.classList.add("not-visible")
+            }
         reader.readAsDataURL(file);
         }
     })
 }
 
-// Modale supprimer les projet
-function deleteProject () {
+function highlightAddWorkButton() {
+    const picAddingValidation = document.getElementById("pic-adding-validation")
+    document.getElementById("file").addEventListener("change", handleInputChange);
+    document.getElementById("title").addEventListener("change", handleInputChange);
+    document.getElementById("category").addEventListener("change", handleInputChange);
+
+    function handleInputChange() {
+        if (checkHighlightConditions()) {
+            picAddingValidation.classList.add("btn-hover", "btn-green");
+        } else {
+            picAddingValidation.classList.remove("btn-hover", "btn-green");
+        }
+    }
+}
+
+function checkHighlightConditions() {
+    const file = document.getElementById("file")
+    const title = document.getElementById("title")
+    const category = document.getElementById("category")
+    const picAddingValidation = document.getElementById("pic-adding-validation")
+    if (file.value !== "" & title.value !== "" & category.value !== "") {
+        return true
+    } else {
+        return false
+    }
+}
+
+async function deleteProject () {
     let trashDiv = document.querySelectorAll(".trash-container")
     trashDiv.forEach(boutton => {
     boutton.addEventListener("click", async (event) => {
@@ -378,12 +341,17 @@ function deleteProject () {
     })
 }
 
-
-/***** 
- * 
+/*
  * Page de connexion
- * 
- * *****/
+ */
+if (document.getElementById("connexion")) {
+    const connexion = document.getElementById("send-connexion-form-btn")
+    connexion.addEventListener("click", (event) => {
+        event.preventDefault()
+        sendConnexionForm()
+    })
+}
+
 function sendConnexionForm () {
     const email = document.getElementById("email").value
     const motDePasse = document.getElementById("password").value
@@ -391,7 +359,7 @@ function sendConnexionForm () {
         "email": email,
         "password": motDePasse
     }
-    // TODO: Récupérer l'erreur et l'intégré à l'HTML pour améliorer l'expérience utilisateur
+
     fetch("http://localhost:5678/api/users/login", {
         method: "POST",
         headers: {
@@ -399,7 +367,6 @@ function sendConnexionForm () {
         },
         body: JSON.stringify(data)
     })
-    // .then((response) => response.json())
     .then((response) => response.json())
     .then((response) => {
         window.localStorage.setItem("token",response.token)
@@ -414,11 +381,46 @@ function sendConnexionForm () {
     });
 }
 
-if (document.getElementById("connexion")) {
-    const connexion = document.getElementById("send-connection-form")
-    connexion.addEventListener("click", (event) => {
-        event.preventDefault()
-        sendConnexionForm()
-    })
+/*
+* Fonctions support
+*/
+function hideGaleryModal() {
+    const modalGalery = document.getElementById("modal-galery")
+    modalGalery.classList.add("not-visible")
+    const backgroundOpacity = document.getElementById("background-opacity")
+    backgroundOpacity.classList.add("not-visible")
 }
 
+function hidePicAddingModal() {
+    let PicAddingModal = document.getElementById("pic-adding-modal")
+        PicAddingModal.classList.add("not-visible")
+        const backgroundOpacity = document.getElementById("background-opacity")
+        backgroundOpacity.classList.add("not-visible")
+}
+
+function showGaleryModal() {
+    const modalGalery = document.getElementById("modal-galery")
+    modalGalery.classList.remove("not-visible")
+    const backgroundOpacity = document.getElementById("background-opacity")
+    backgroundOpacity.classList.remove("not-visible")
+}
+
+function showPicAddingModal() {
+    const PicAddingModal = document.getElementById("pic-adding-modal")
+    PicAddingModal.classList.remove("not-visible")
+    const backgroundOpacity = document.getElementById("background-opacity")
+    backgroundOpacity.classList.remove("not-visible")
+}
+
+async function getWorks () {
+    const reponse = await fetch("http://localhost:5678/api/works")
+    const travaux = await reponse.json()
+    return travaux
+}
+
+async function getCategories () {
+        const reponse = await fetch("http://localhost:5678/api/categories")
+        const categories = await reponse.json()
+        // Stockage des informations dans le localStorage
+        return categories
+}

@@ -15,7 +15,7 @@ table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed,
 figure, figcaption, footer, header, hgroup,
 menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
+time, mark, audio, video, input {
 	margin: 0;
 	padding: 0;
 	border: 0;
@@ -30,24 +30,34 @@ article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
 	display: block;
 }
+
+main {
+	min-height: 800px;
+}
+
 body {
 	line-height: 1;
 }
+
 ol, ul {
 	list-style: none;
 }
+
 blockquote, q {
 	quotes: none;
 }
+
 blockquote:before, blockquote:after,
 q:before, q:after {
 	content: '';
 	content: none;
 }
+
 table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
+
 /** end reset css**/
 body {
 	max-width: 1140px;
@@ -56,6 +66,7 @@ body {
 	font-size: 14px;
 }
 
+/* Headband */
 #headband {
 	display: flex;
 	justify-content: center;
@@ -78,6 +89,8 @@ header {
 	justify-content: space-between;
 	margin: 50px 0
 }
+
+
 section {
 	margin: 50px 0
 }
@@ -102,7 +115,8 @@ h2, #connexion h1{
 	font-family: 'Syne';
 	font-weight: 700;
 	font-size: 30px;
-	color: #1D6154
+	color: #1D6154;
+	margin-bottom: 20px;
 }
 nav ul {
 	display: flex;
@@ -115,8 +129,12 @@ nav li {
 	font-size: 1.2em;
 }
 
-li:hover {
-	color: #B1663C;
+li:hover, #modify-gallery:hover {
+	font-weight: bold;
+}
+
+#contact h2, #connexion h1{
+	margin-bottom: 20px;
 }
 #introduction {
 	display: flex;
@@ -148,7 +166,7 @@ li:hover {
 	margin-bottom: 38px;
 }
 
-#modify-galery {
+#modify-gallery {
 	display: flex;
 	align-items: center;
 	gap: 10px;
@@ -161,7 +179,7 @@ li:hover {
 	color: black;
 }
 
-#modify-galery:hover {
+#modify-gallery:hover {
 	cursor: pointer;
 }
 
@@ -181,6 +199,7 @@ li:hover {
 	width: 100%;
 
 }
+
 #contact {
 	width: 50%;
 	margin: auto;
@@ -188,38 +207,44 @@ li:hover {
 
 #contact > * {
 	text-align: center;
-
 }
+
 #contact h2, #connexion h1{
 	margin-bottom: 20px;
 }
 
-#contact form, #connexion form {
-	text-align: left;
-	margin-top:30px;
-	display: flex;
-	flex-direction: column;
-}
-
-#contact input, #connexion input, #pic-adding-modal input, #pic-adding-modal select {
-	height: 50px;
-	font-size: 1.2em;
-	border: none;
-	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
-}
-#contact label, #connexion label, #pic-adding-modal label {
-	margin: 2em 0 1em 0;
-	color: #3D3D3D;
-}
 #contact textarea {
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 }
 
-#pic-adding-form {
-	width: 67%;
+form {
 	display: flex;
 	flex-direction: column;
+	margin-top: 30px;
+}
+
+#pic-adding-form {
+	width: 90%;
+	align-items: left;
+}
+
+#pic-dropping {
+	width: 100%;
+}
+
+input, select {
+	width: 100%;
+	height: 50px;
+	font-size: 1.2em;
+	border: none;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+}
+
+label {
+	margin: 2em 0 1em 0;
+	color: #3D3D3D;
+	text-align: left;
 }
 
 #file {
@@ -237,14 +262,18 @@ li:hover {
 	margin-top: 0px;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
 }
 
-#image-label {
+#decoration-label {
 	margin-top: 20px;
 	font-size: 76px;
 	display: block;
 	color: #B9C5CC;
+}
+
+#uploaded-pic {
+	object-fit: contain;
+	display:block;
 }
 
 #add-picture-div {
@@ -261,24 +290,73 @@ li:hover {
 	border-radius: 18px;
 }
 
+#label-to-hide {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
 label p {
 	font-size: 10px;
 	margin-top: 7px;
 	margin-bottom: 19px;
 }
 
-input[type="submit"] {
+.btn {
 	font-family: 'Syne';
 	font-weight: 700;
 	color: white;
-	background-color: #1D6154;
-	margin : 2em auto ;
-	width: 180px;
+	height: 36px;
 	text-align: center;
-	border-radius: 60px ;
+	border-radius: 60px;
 }
 
-.filtres {
+.btn:hover, .filters:hover {
+	cursor: pointer;
+}
+
+.btn-hover:hover {
+	background-color: #0E2F28;
+}
+
+.btn-validation {
+	width: 237px;
+	margin-left:auto;
+	margin-right: auto;
+	margin-top: 0;
+	margin-bottom: 43px;
+	background-color: #A7A7A7;
+}
+
+.btn-add {
+	width: 237px;
+	margin-top: 0;
+	margin-bottom: 43px;
+	border: 1px solid black;
+	filter: drop-shadow(0px 5px 3px rgba(0,0,0,0.5));
+}
+
+.btn-send {
+	width: 179px;
+	margin : 2em auto;
+	border: none;
+	border-width: 0px;
+}
+
+.btn-send-connexion-form {
+	width: 179px;
+	margin-top: 38px;
+	margin-bottom: 28px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.btn-green {
+	background-color: #1D6154;
+}
+
+
+.filters {
 	font-family: 'Syne';
 	font-weight: 700;
 	color: #1D6154;
@@ -289,14 +367,16 @@ input[type="submit"] {
 	border-radius: 60px ;
 	border: 1px solid  #1D6154;
 	margin-bottom: 38px;
+	transition: all 0.3s ease;
 }
 
-.filtres-actif {
+.filters-active, .filters:hover {
 	color: white;
 	background-color: #1D6154;
+	transition: all 0.3s ease;
 }
 
-#divisionFiltres {
+#divFilters {
 	display: flex;
 	justify-content: center;
 	gap: 10px;
@@ -309,12 +389,8 @@ input[type="submit"] {
 	align-items: center;
 }
 
-#connection-form {
+#connexion-form {
 	width: 379px;
-}
-
-main {
-	min-height: 1024px;
 }
 
 #password-forgotten {
@@ -324,13 +400,10 @@ main {
 footer nav ul {
 	display: flex;
 	justify-content: flex-end;
-	margin: 2em
+	margin: 2em;
 }
 
 /* TODO: l'utilisation de !important est motivté par la div modal-galery ne disparait pas malgré l'attribution de la class */
-.not-visible {
-	display: none !important;
-}
 
 .modal {
 	position: absolute;
@@ -340,7 +413,6 @@ footer nav ul {
 	transform: translate(-50%,0);
 	z-index: 2;
 	width: 630px;
-	max-width: 100%;
 	border-radius: 10px;
 	padding-top: 60px;
 	padding-left: 105px;
@@ -349,10 +421,13 @@ footer nav ul {
 	flex-direction: column;
 	align-items: center;
 }
+/* A vérifier si je peux me passer du important pour cacher les bandeaux */
+.not-visible {
+	display: none !important;
+}
 
-/* TODO: rendre l'espace noir plus grand */
 #background-opacity {
-	position: absolute;
+	position: fixed;
 	height : 100%;
 	width: 100%;
 	max-width: 1140px;
@@ -375,16 +450,17 @@ footer nav ul {
 }
 
 .modal h1 {
-	font-size: 26;
+	font-size: 26px;
 	font-family: work sans;
 	color: black;
-	margin-bottom: 46px;
 }
 
 #modal-content {
+	margin-top: 36px;
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-	gap: 10px;
+	column-gap: 10px;
+	row-gap: 30px;
 }
 
 .picture-container {
@@ -420,31 +496,4 @@ footer nav ul {
 }
 
 /* TODO: regrouper #ajouter-une-photo et input[submit] (le envoyer du contact) ou créer une class */
-#pic-adding, #pic-adding-validation {
-	width: 237px;
-	font-weight: 700;
-	margin-top: 0;
-	margin-bottom: 43px;
-	padding-top: 11px;
-	padding-bottom: 11px;
-	color: white;
-	border-radius: 60px;
-	background-color: #1D6154;
-	font-family: 'Syne';
-	filter: drop-shadow(0px 5px 3px rgba(0,0,0,0.5));
-}
-
-#pic-adding-validation {
-	width: 237px;
-	font-weight: 700;
-	margin-top: 0;
-	margin-bottom: 43px;
-	padding-top: 11px;
-	padding-bottom: 11px;
-	color: white;
-	border-radius: 60px;
-	background-color: #A7A7A7;
-	font-family: 'Syne';
-	filter: drop-shadow(0px 5px 3px rgba(0,0,0,0.5));
-}
 
