@@ -553,6 +553,8 @@ footer nav ul {
 
 .project-picture {
   height: 100px;
+  width: 75px;
+  object-fit: cover;
 }
 
 .trash-container {
